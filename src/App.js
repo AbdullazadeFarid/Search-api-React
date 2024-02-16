@@ -1,23 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+
+
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import axios from "axios";
+import Display from "./components/display/display";
+import Input from "./components/input/input";
 
 function App() {
+  const baseUrl = "https://jsonplaceholder.typicode.com/users";
+  const [info, setInfo] = useState([]);
+  const [filteredInfo, setFilteredInfo] = useState([]);
+
+
+  const getData = async () => {
+    try {
+      const response = await axios.get(baseUrl);
+      setInfo(response.data);
+      setFilteredInfo(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    getData();
+  }, []);
+
+
+
+  const handleInputChange = (inputValue) => {
+    const filteredData = info.filter((item) =>
+      item.name.toLowerCase().includes(inputValue.toLowerCase())
+    );
+    setFilteredInfo(filteredData);
+  };
+
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Input onInputChange={handleInputChange} />
+      
+      {
+      filteredInfo.map((item) => (
+        <Display key={item.id} ad={item.name} />
+
+      ))}
     </div>
   );
 }
